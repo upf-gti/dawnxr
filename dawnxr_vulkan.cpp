@@ -94,10 +94,12 @@ XrResult getVulkanGraphicsRequirements(XrInstance instance, XrSystemId systemId,
 	XrGraphicsRequirementsVulkan2KHR vulkanReqs{XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR};
 	XR_TRY(xrGetVulkanGraphicsRequirements2KHR(instance, systemId, &vulkanReqs));
 
-	std::cout << "### Vulkan graphics requirements minApiVersionSupported: " << vulkanReqs.minApiVersionSupported
-			  << std::endl;
-	std::cout << "### Vulkan graphics requirements maxApiVersionSupported: " << vulkanReqs.maxApiVersionSupported
-			  << std::endl;
+	std::cout << "### Vulkan graphics requirements minApiVersionSupported: " << XR_VERSION_MAJOR(vulkanReqs.minApiVersionSupported) << "." <<
+		XR_VERSION_MINOR(vulkanReqs.minApiVersionSupported) << "." <<
+		XR_VERSION_PATCH(vulkanReqs.minApiVersionSupported) << std::endl;
+	std::cout << "### Vulkan graphics requirements maxApiVersionSupported: " << XR_VERSION_MAJOR(vulkanReqs.maxApiVersionSupported) << "." <<
+		XR_VERSION_MINOR(vulkanReqs.maxApiVersionSupported) << "." <<
+		XR_VERSION_PATCH(vulkanReqs.maxApiVersionSupported) << std::endl;
 
 	return XR_SUCCESS;
 }

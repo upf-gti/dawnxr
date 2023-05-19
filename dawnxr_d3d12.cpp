@@ -7,6 +7,8 @@
 
 using namespace dawnxr::internal;
 
+#ifdef XR_USE_GRAPHICS_API_D3D12
+
 namespace {
 
 const auto dawnSwapchainFormat = wgpu::TextureFormat::BGRA8UnormSrgb;
@@ -137,3 +139,5 @@ XrResult createD3D12Session(XrInstance instance, const XrSessionCreateInfo* crea
 }
 
 } // namespace dawnxr::internal
+
+#endif
