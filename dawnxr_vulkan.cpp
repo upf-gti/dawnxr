@@ -47,10 +47,12 @@ struct VulkanSession : Session {
 		XR_TRY(xrEnumerateSwapchainImages(*swapchain, n, &n, (XrSwapchainImageBaseHeader*)vulkanImages.data()));
 		if (n != vulkanImages.size()) return XR_ERROR_RUNTIME_FAILURE;
 
+		wgpu::TextureUsage usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
+
 		wgpu::TextureDescriptor textureDesc{
 			nullptr,												  // nextInChain
 			nullptr,												  // label
-			wgpu::TextureUsage::RenderAttachment,					  // usage
+			usage,													  // usage
 			wgpu::TextureDimension::e2D,							  // dimension
 			wgpu::Extent3D{createInfo->width, createInfo->height, 1}, // size
 			(wgpu::TextureFormat)createInfo->format,				  // format
