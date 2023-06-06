@@ -47,37 +47,35 @@ struct VulkanSession : Session {
 		XR_TRY(xrEnumerateSwapchainImages(*swapchain, n, &n, (XrSwapchainImageBaseHeader*)vulkanImages.data()));
 		if (n != vulkanImages.size()) return XR_ERROR_RUNTIME_FAILURE;
 
-		wgpu::TextureUsage usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
+		int usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
 
-		wgpu::TextureDescriptor textureDesc{
-			nullptr,												  // nextInChain
-			nullptr,												  // label
-			usage,													  // usage
-			wgpu::TextureDimension::e2D,							  // dimension
-			wgpu::Extent3D{createInfo->width, createInfo->height, 1}, // size
-			(wgpu::TextureFormat)createInfo->format,				  // format
-			createInfo->mipCount,									  // mipLevelCount;
-			createInfo->sampleCount,								  // sampleCount;
-			0,														  // viewFormatCount;
-			nullptr													  // view formats
-		};
+		wgpu::TextureDescriptor textureDesc = {};
+		textureDesc.nextInChain = nullptr;
+		textureDesc.label = nullptr;
+		textureDesc.usage = usage;
+		textureDesc.dimension = wgpu::TextureDimension::_2D;
+		textureDesc.size = wgpu::Extent3D{ createInfo->width, createInfo->height, 1 };
+		textureDesc.format = dawnSwapchainFormat;
+		textureDesc.mipLevelCount = createInfo->mipCount;
+		textureDesc.sampleCount = createInfo->sampleCount;
+		textureDesc.viewFormatCount = 0;
+		textureDesc.viewFormats = nullptr;
 
-		wgpu::TextureViewDescriptor textureViewDesc{
-			nullptr,						 // nextInChain
-			nullptr,						 // label
-			textureDesc.format,				 // format
-			wgpu::TextureViewDimension::e2D, // dimension
-			0,								 // baseMipLevel
-			1,								 // mipLevelCount
-			0,								 // baseArrayLayer
-			1,								 // arrayLayerCount
-			wgpu::TextureAspect::All		 // aspect
-		};
+		wgpu::TextureViewDescriptor textureViewDesc = {};
+		textureViewDesc.nextInChain = nullptr;
+		textureViewDesc.label = nullptr;
+		textureViewDesc.format = textureDesc.format;
+		textureViewDesc.dimension = wgpu::TextureViewDimension::_2D;
+		textureViewDesc.baseMipLevel = 0;
+		textureViewDesc.mipLevelCount = 1;
+		textureViewDesc.baseArrayLayer = 0;
+		textureViewDesc.arrayLayerCount = 1;
+		textureViewDesc.aspect = wgpu::TextureAspect::All;
 
 		for (auto& it : vulkanImages) {
 			auto texture = wgpu::Texture(dawn::native::vulkan::CreateSwapchainWGPUTexture(
-				device.Get(), (WGPUTextureDescriptor*)&textureDesc, it.image));
-			images.push_back(texture.CreateView(&textureViewDesc));
+				device, (WGPUTextureDescriptor*)&textureDesc, it.image));
+			images.push_back(texture.createView(textureViewDesc));
 		}
 
 		return XR_SUCCESS;
@@ -177,10 +175,10 @@ XrResult createVulkanSession(XrInstance instance, const XrSessionCreateInfo* cre
 	// XrGraphicsBindingVulkan2KHR is an alias for XrGraphicsBindingVulkanKHR
 	XrGraphicsBindingVulkan2KHR vulkanBinding{XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR};
 
-	vulkanBinding.instance = dawn::native::vulkan::GetInstance(dawnDevice.Get());
-	vulkanBinding.physicalDevice = dawn::native::vulkan::GetVkPhysicalDevice(dawnDevice.Get());
-	vulkanBinding.device = dawn::native::vulkan::GetVkDevice(dawnDevice.Get());
-	vulkanBinding.queueFamilyIndex = dawn::native::vulkan::GetGraphicsQueueFamily(dawnDevice.Get());
+	vulkanBinding.instance = dawn::native::vulkan::GetInstance(dawnDevice);
+	vulkanBinding.physicalDevice = dawn::native::vulkan::GetVkPhysicalDevice(dawnDevice);
+	vulkanBinding.device = dawn::native::vulkan::GetVkDevice(dawnDevice);
+	vulkanBinding.queueFamilyIndex = dawn::native::vulkan::GetGraphicsQueueFamily(dawnDevice);
 	vulkanBinding.queueIndex = 0;
 
 	XrSessionCreateInfo vulkanCreateInfo{XR_TYPE_SESSION_CREATE_INFO};

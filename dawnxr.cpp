@@ -72,7 +72,7 @@ XrResult createSession(XrInstance instance, const XrSessionCreateInfo* createInf
 	if (binding->type != XR_TYPE_GRAPHICS_BINDING_DAWN_EXT) return xrCreateSession(instance, createInfo, session);
 
 	auto backendType =
-		(wgpu::BackendType)dawn::native::GetWGPUBackendType(dawn::native::GetWGPUAdapter(binding->device.Get()));
+		(wgpu::BackendType)dawn::native::GetWGPUBackendType(dawn::native::GetWGPUAdapter(binding->device));
 
 	// TODO: Woah, you *HAVE* to get graphics requirements or session creation fails?!?
 	//

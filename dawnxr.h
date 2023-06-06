@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dawn/webgpu_cpp.h>
+#include <webgpu/webgpu.hpp>
 
 #include <dawn/native/DawnNative.h>
 
