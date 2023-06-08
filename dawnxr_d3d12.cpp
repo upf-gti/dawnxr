@@ -11,21 +11,21 @@ using namespace dawnxr::internal;
 
 namespace {
 
-const auto dawnSwapchainFormat = wgpu::TextureFormat::BGRA8UnormSrgb;
+const auto dawnSwapchainFormat = WGPUTextureFormat::BGRA8UnormSrgb;
 const auto d3d12SwapchainFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
 struct D3D12Session : Session {
 
-	D3D12Session(XrSession session, const wgpu::Device& device) : Session(session, device) {}
+	D3D12Session(XrSession session, const WGPUDevice& device) : Session(session, device) {}
 
-	XrResult enumerateSwapchainFormats(std::vector<wgpu::TextureFormat>& formats) override {
+	XrResult enumerateSwapchainFormats(std::vector<WGPUTextureFormat>& formats) override {
 
 		formats.push_back(dawnSwapchainFormat);
 
 		return XR_SUCCESS;
 	}
 
-	XrResult createSwapchain(const XrSwapchainCreateInfo* createInfo, std::vector<wgpu::TextureView>& images,
+	XrResult createSwapchain(const XrSwapchainCreateInfo* createInfo, std::vector<WGPUTextureView>& images,
 							 XrSwapchain* swapchain) override {
 
 		if (createInfo->type != XR_TYPE_SWAPCHAIN_CREATE_INFO) return XR_ERROR_HANDLE_INVALID;
@@ -47,33 +47,33 @@ struct D3D12Session : Session {
 		XR_TRY(xrEnumerateSwapchainImages(*swapchain, n, &n, (XrSwapchainImageBaseHeader*)d3d12Images.data()));
 		if (n != d3d12Images.size()) return XR_ERROR_RUNTIME_FAILURE;
 
-		wgpu::TextureDescriptor textureDesc{
+		WGPUTextureDescriptor textureDesc{
 			nullptr,												  // nextInChain
 			nullptr,												  // label
-			wgpu::TextureUsage::RenderAttachment,					  // usage
-			wgpu::TextureDimension::e2D,							  // dimension
-			wgpu::Extent3D{createInfo->width, createInfo->height, 1}, // size
-			(wgpu::TextureFormat)createInfo->format,				  // format
+			WGPUTextureUsage::RenderAttachment,					  // usage
+			WGPUTextureDimension::e2D,							  // dimension
+			WGPUExtent3D{createInfo->width, createInfo->height, 1}, // size
+			(WGPUTextureFormat)createInfo->format,				  // format
 			createInfo->mipCount,									  // mipLevelCount;
 			createInfo->sampleCount,								  // sampleCount;
 			0,														  // viewFormatCount;
 			nullptr													  // view formats
 		};
 
-		wgpu::TextureViewDescriptor textureViewDesc{
+		WGPUTextureViewDescriptor textureViewDesc{
 			nullptr,						 // nextInChain
 			nullptr,						 // label
 			textureDesc.format,				 // format
-			wgpu::TextureViewDimension::e2D, // dimension
+			WGPUTextureViewDimension::e2D, // dimension
 			0,								 // baseMipLevel
 			1,								 // mipLevelCount
 			0,								 // baseArrayLayer
 			1,								 // arrayLayerCount
-			wgpu::TextureAspect::All		 // aspect
+			WGPUTextureAspect::All		 // aspect
 		};
 
 		for (auto& it : d3d12Images) {
-			auto texture = wgpu::Texture(dawn::native::d3d12::CreateSwapchainWGPUTexture(
+			auto texture = WGPUTexture(dawn::native::d3d12::CreateSwapchainWGPUTexture(
 				device.Get(), (WGPUTextureDescriptor*)&textureDesc, it.texture));
 			images.push_back(texture.CreateView(&textureViewDesc));
 		}

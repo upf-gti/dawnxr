@@ -1,6 +1,6 @@
 #pragma once
 
-#include <webgpu/webgpu.hpp>
+#include <dawn/webgpu.h>
 
 #include <dawn/native/DawnNative.h>
 
@@ -35,14 +35,14 @@ namespace dawnxr {
 struct GraphicsBindingDawn {
 	XrStructureType type = XR_TYPE_GRAPHICS_BINDING_DAWN_EXT;
 	const void* XR_MAY_ALIAS next = nullptr;
-	wgpu::Device device;
+	WGPUDevice device;
 };
 
 // Mirrors the XrSwapchainImageD3D12KHR etc structs.
 struct SwapchainImageDawn {
 	XrStructureType type = XR_TYPE_SWAPCHAIN_IMAGE_DAWN_EXT;
 	void* XR_MAY_ALIAS next = nullptr;
-	wgpu::TextureView textureView;
+	WGPUTextureView textureView;
 };
 
 // Mirrors the XrGraphicsRequirementsD3D12KHR etc structs.
@@ -52,11 +52,11 @@ struct GraphicsRequirementsDawn {
 };
 
 // Gets dawn graphics requirements for a given backend type. Currently just dumps backend requirements to stdout.
-XrResult getGraphicsRequirements(XrInstance instance, XrSystemId systemId, wgpu::BackendType backendType,
+XrResult getGraphicsRequirements(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType,
 								 GraphicsRequirementsDawn* graphicsRequirements);
 
 // Creates a dawn::native::AdapterDiscoveryOptionsBase subclass instance for a given backend type.
-XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, wgpu::BackendType backendType,
+XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType,
 									   dawn::native::AdapterDiscoveryOptionsBase** options);
 
 // Use this instead of xrCreateSession

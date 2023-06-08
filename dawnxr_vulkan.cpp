@@ -10,21 +10,21 @@ using namespace dawnxr::internal;
 
 namespace {
 
-const auto dawnSwapchainFormat = wgpu::TextureFormat::BGRA8UnormSrgb;
+const auto dawnSwapchainFormat = WGPUTextureFormat_BGRA8UnormSrgb;
 const auto vulkanSwapchainFormat = VK_FORMAT_B8G8R8A8_SRGB;
 
 struct VulkanSession : Session {
 
-	VulkanSession(XrSession session, const wgpu::Device& device) : Session(session, device) {}
+	VulkanSession(XrSession session, const WGPUDevice& device) : Session(session, device) {}
 
-	XrResult enumerateSwapchainFormats(std::vector<wgpu::TextureFormat>& formats) override {
+	XrResult enumerateSwapchainFormats(std::vector<WGPUTextureFormat>& formats) override {
 
 		formats.push_back(dawnSwapchainFormat);
 
 		return XR_SUCCESS;
 	}
 
-	XrResult createSwapchain(const XrSwapchainCreateInfo* createInfo, std::vector<wgpu::TextureView>& images,
+	XrResult createSwapchain(const XrSwapchainCreateInfo* createInfo, std::vector<WGPUTextureView>& images,
 							 XrSwapchain* swapchain) override {
 
 		if (createInfo->type != XR_TYPE_SWAPCHAIN_CREATE_INFO) return XR_ERROR_HANDLE_INVALID;
@@ -47,35 +47,34 @@ struct VulkanSession : Session {
 		XR_TRY(xrEnumerateSwapchainImages(*swapchain, n, &n, (XrSwapchainImageBaseHeader*)vulkanImages.data()));
 		if (n != vulkanImages.size()) return XR_ERROR_RUNTIME_FAILURE;
 
-		int usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
+		int usage = WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding;
 
-		wgpu::TextureDescriptor textureDesc = {};
+		WGPUTextureDescriptor textureDesc = {};
 		textureDesc.nextInChain = nullptr;
 		textureDesc.label = nullptr;
 		textureDesc.usage = usage;
-		textureDesc.dimension = wgpu::TextureDimension::_2D;
-		textureDesc.size = wgpu::Extent3D{ createInfo->width, createInfo->height, 1 };
+		textureDesc.dimension = WGPUTextureDimension_2D;
+		textureDesc.size = WGPUExtent3D{ createInfo->width, createInfo->height, 1 };
 		textureDesc.format = dawnSwapchainFormat;
 		textureDesc.mipLevelCount = createInfo->mipCount;
 		textureDesc.sampleCount = createInfo->sampleCount;
 		textureDesc.viewFormatCount = 0;
 		textureDesc.viewFormats = nullptr;
 
-		wgpu::TextureViewDescriptor textureViewDesc = {};
+		WGPUTextureViewDescriptor textureViewDesc = {};
 		textureViewDesc.nextInChain = nullptr;
 		textureViewDesc.label = nullptr;
 		textureViewDesc.format = textureDesc.format;
-		textureViewDesc.dimension = wgpu::TextureViewDimension::_2D;
+		textureViewDesc.dimension = WGPUTextureViewDimension_2D;
 		textureViewDesc.baseMipLevel = 0;
 		textureViewDesc.mipLevelCount = 1;
 		textureViewDesc.baseArrayLayer = 0;
 		textureViewDesc.arrayLayerCount = 1;
-		textureViewDesc.aspect = wgpu::TextureAspect::All;
+		textureViewDesc.aspect = WGPUTextureAspect_All;
 
 		for (auto& it : vulkanImages) {
-			auto texture = wgpu::Texture(dawn::native::vulkan::CreateSwapchainWGPUTexture(
-				device, (WGPUTextureDescriptor*)&textureDesc, it.image));
-			images.push_back(texture.createView(textureViewDesc));
+			auto texture = dawn::native::vulkan::CreateSwapchainWGPUTexture(device, (WGPUTextureDescriptor*)&textureDesc, it.image);
+			images.push_back(wgpuTextureCreateView(texture, &textureViewDesc));
 		}
 
 		return XR_SUCCESS;
