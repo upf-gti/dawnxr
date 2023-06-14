@@ -1,13 +1,13 @@
 #include "dawnxr_internal.h"
 
+#ifdef XR_USE_GRAPHICS_API_D3D12
+
 #include <dawn/native/D3D12Backend.h>
 
 #include <iostream>
 #include <vector>
 
 using namespace dawnxr::internal;
-
-#ifdef XR_USE_GRAPHICS_API_D3D12
 
 namespace {
 
