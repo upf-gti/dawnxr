@@ -45,8 +45,7 @@ XrResult getGraphicsRequirements(XrInstance instance, XrSystemId systemId, WGPUB
 	return XR_SUCCESS;
 }
 
-XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType,
-									   dawn::native::AdapterDiscoveryOptionsBase** options) {
+XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType, void** config) {
 
 	switch (backendType) {
 #ifdef XR_USE_GRAPHICS_API_D3D12
@@ -56,7 +55,7 @@ XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
 #endif
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 	case WGPUBackendType_Vulkan:
-		XR_TRY(createVulkanAdapterDiscoveryOptions(instance, systemId, options));
+		XR_TRY(createVulkanOpenXRConfig(instance, systemId, config));
 		break;
 #endif
 	default:

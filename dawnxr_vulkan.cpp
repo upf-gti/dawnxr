@@ -103,14 +103,11 @@ XrResult getVulkanGraphicsRequirements(XrInstance instance, XrSystemId systemId,
 	return XR_SUCCESS;
 }
 
-XrResult createVulkanAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
-											 dawn::native::AdapterDiscoveryOptionsBase** options) {
+XrResult createVulkanOpenXRConfig(XrInstance instance, XrSystemId systemId, void** config) {
 
-	dawn::native::vulkan::OpenXRConfig xrConfig;
+	auto xrConfig = new dawn::native::vulkan::OpenXRConfig();
 
-	xrConfig.enabled = true;
-
-	xrConfig.CreateVkInstance = [=](PFN_vkGetInstanceProcAddr getProcAddr, const VkInstanceCreateInfo* vkCreateInfo,
+	xrConfig->CreateVkInstance = [=](PFN_vkGetInstanceProcAddr getProcAddr, const VkInstanceCreateInfo* vkCreateInfo,
 									const VkAllocationCallbacks* vkAllocator, VkInstance* vkInstance) -> VkResult {
 		XR_PROC(instance, xrCreateVulkanInstanceKHR);
 
@@ -127,7 +124,7 @@ XrResult createVulkanAdapterDiscoveryOptions(XrInstance instance, XrSystemId sys
 		return VK_SUCCESS;
 	};
 
-	xrConfig.GetVkPhysicalDevice = [=](VkInstance vkInstance, VkPhysicalDevice* vkPDevice) -> VkResult {
+	xrConfig->GetVkPhysicalDevice = [=](VkInstance vkInstance, VkPhysicalDevice* vkPDevice) -> VkResult {
 		XR_PROC(instance, xrGetVulkanGraphicsDevice2KHR);
 
 		XrVulkanGraphicsDeviceGetInfoKHR getInfo{XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR};
@@ -139,7 +136,7 @@ XrResult createVulkanAdapterDiscoveryOptions(XrInstance instance, XrSystemId sys
 		return VK_SUCCESS;
 	};
 
-	xrConfig.CreateVkDevice = [=](PFN_vkGetInstanceProcAddr getProcAddr, VkPhysicalDevice vkPDevice,
+	xrConfig->CreateVkDevice = [=](PFN_vkGetInstanceProcAddr getProcAddr, VkPhysicalDevice vkPDevice,
 								  const VkDeviceCreateInfo* vkCreateInfo, const VkAllocationCallbacks* vkAllocator,
 								  VkDevice* vkDevice) -> VkResult {
 		XR_PROC(instance, xrCreateVulkanDeviceKHR);
@@ -157,9 +154,8 @@ XrResult createVulkanAdapterDiscoveryOptions(XrInstance instance, XrSystemId sys
 		return vkResult;
 	};
 
-	auto discoveryOptions = new dawn::native::vulkan::AdapterDiscoveryOptions();
-	discoveryOptions->openXRConfig = xrConfig;
-	*options = discoveryOptions;
+	*config = xrConfig;
+
 	return XR_SUCCESS;
 }
 

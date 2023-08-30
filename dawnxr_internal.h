@@ -46,8 +46,7 @@ XrResult createD3D12Session(XrInstance instance, const XrSessionCreateInfo* crea
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 XrResult getVulkanGraphicsRequirements(XrInstance instance, XrSystemId systemId, GraphicsRequirementsDawn* requirements);
-XrResult createVulkanAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
-											 dawn::native::AdapterDiscoveryOptionsBase** options);
+XrResult createVulkanOpenXRConfig(XrInstance instance, XrSystemId systemId, void** config);
 XrResult createVulkanSession(XrInstance instance, const XrSessionCreateInfo* createInfo, Session** session);
 #endif
 

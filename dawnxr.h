@@ -56,8 +56,7 @@ XrResult getGraphicsRequirements(XrInstance instance, XrSystemId systemId, WGPUB
 								 GraphicsRequirementsDawn* graphicsRequirements);
 
 // Creates a dawn::native::AdapterDiscoveryOptionsBase subclass instance for a given backend type.
-XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType,
-									   dawn::native::AdapterDiscoveryOptionsBase** options);
+XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId, WGPUBackendType backendType, void** config);
 
 // Use this instead of xrCreateSession
 XrResult createSession(XrInstance instance, const XrSessionCreateInfo* createInfo, XrSession* session);
