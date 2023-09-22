@@ -11,7 +11,7 @@ using namespace dawnxr::internal;
 
 namespace {
 
-const auto dawnSwapchainFormat = WGPUTextureFormat::BGRA8UnormSrgb;
+const auto dawnSwapchainFormat = WGPUTextureFormat_BGRA8UnormSrgb;
 const auto d3d12SwapchainFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
 struct D3D12Session : Session {
@@ -47,36 +47,35 @@ struct D3D12Session : Session {
 		XR_TRY(xrEnumerateSwapchainImages(*swapchain, n, &n, (XrSwapchainImageBaseHeader*)d3d12Images.data()));
 		if (n != d3d12Images.size()) return XR_ERROR_RUNTIME_FAILURE;
 
-		WGPUTextureDescriptor textureDesc{
-			nullptr,												  // nextInChain
-			nullptr,												  // label
-			WGPUTextureUsage::RenderAttachment,					  // usage
-			WGPUTextureDimension::e2D,							  // dimension
-			WGPUExtent3D{createInfo->width, createInfo->height, 1}, // size
-			(WGPUTextureFormat)createInfo->format,				  // format
-			createInfo->mipCount,									  // mipLevelCount;
-			createInfo->sampleCount,								  // sampleCount;
-			0,														  // viewFormatCount;
-			nullptr													  // view formats
-		};
+        int usage = WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding;
 
-		WGPUTextureViewDescriptor textureViewDesc{
-			nullptr,						 // nextInChain
-			nullptr,						 // label
-			textureDesc.format,				 // format
-			WGPUTextureViewDimension::e2D, // dimension
-			0,								 // baseMipLevel
-			1,								 // mipLevelCount
-			0,								 // baseArrayLayer
-			1,								 // arrayLayerCount
-			WGPUTextureAspect::All		 // aspect
-		};
+        WGPUTextureDescriptor textureDesc = {};
+        textureDesc.nextInChain = nullptr;
+        textureDesc.label = nullptr;
+        textureDesc.usage = usage;
+        textureDesc.dimension = WGPUTextureDimension_2D;
+        textureDesc.size = WGPUExtent3D{ createInfo->width, createInfo->height, 1 };
+        textureDesc.format = dawnSwapchainFormat;
+        textureDesc.mipLevelCount = createInfo->mipCount;
+        textureDesc.sampleCount = createInfo->sampleCount;
+        textureDesc.viewFormatCount = 0;
+        textureDesc.viewFormats = nullptr;
 
-		for (auto& it : d3d12Images) {
-			auto texture = WGPUTexture(dawn::native::d3d12::CreateSwapchainWGPUTexture(
-				device.Get(), (WGPUTextureDescriptor*)&textureDesc, it.texture));
-			images.push_back(texture.CreateView(&textureViewDesc));
-		}
+        WGPUTextureViewDescriptor textureViewDesc = {};
+        textureViewDesc.nextInChain = nullptr;
+        textureViewDesc.label = nullptr;
+        textureViewDesc.format = textureDesc.format;
+        textureViewDesc.dimension = WGPUTextureViewDimension_2D;
+        textureViewDesc.baseMipLevel = 0;
+        textureViewDesc.mipLevelCount = 1;
+        textureViewDesc.baseArrayLayer = 0;
+        textureViewDesc.arrayLayerCount = 1;
+        textureViewDesc.aspect = WGPUTextureAspect_All;
+
+        for (auto& it : d3d12Images) {
+            auto texture = dawn::native::d3d12::CreateSwapchainWGPUTexture(device, (WGPUTextureDescriptor*)&textureDesc, it.texture);
+            images.push_back(wgpuTextureCreateView(texture, &textureViewDesc));
+        }
 
 		return XR_SUCCESS;
 	}
@@ -86,8 +85,7 @@ struct D3D12Session : Session {
 
 namespace dawnxr::internal {
 
-XrResult getD3D12GraphicsRequirements(XrInstance instance, XrSystemId systemId,
-									  GraphicsRequirementsDawn* requirements) {
+XrResult getD3D12GraphicsRequirements(XrInstance instance, XrSystemId systemId, GraphicsRequirementsDawn* requirements) {
 
 	PFN_xrGetD3D12GraphicsRequirementsKHR xrGetD3D12GraphicsRequirementsKHR = nullptr;
 	XR_TRY(xrGetInstanceProcAddr(instance, "xrGetD3D12GraphicsRequirementsKHR",
@@ -103,10 +101,9 @@ XrResult getD3D12GraphicsRequirements(XrInstance instance, XrSystemId systemId,
 	return XR_SUCCESS;
 }
 
-XrResult createD3D12AdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
-											dawn::native::AdapterDiscoveryOptionsBase** options) {
+XrResult createD3D12OpenXRConfig(XrInstance instance, XrSystemId systemId, void** config) {
 
-	*options = new dawn::native::d3d12::AdapterDiscoveryOptions();
+    *config = nullptr;
 
 	return XR_SUCCESS;
 }
@@ -121,8 +118,8 @@ XrResult createD3D12Session(XrInstance instance, const XrSessionCreateInfo* crea
 
 	XrGraphicsBindingD3D12KHR d3d12Binding{XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
 
-	d3d12Binding.device = dawn::native::d3d12::GetD3D12Device(dawnDevice.Get()).Get();
-	d3d12Binding.queue = dawn::native::d3d12::GetD3D12CommandQueue(dawnDevice.Get()).Get();
+	d3d12Binding.device = dawn::native::d3d12::GetD3D12Device(dawnDevice).Get();
+	d3d12Binding.queue = dawn::native::d3d12::GetD3D12CommandQueue(dawnDevice).Get();
 
 	//	auto luid = d3d12Binding.device->GetAdapterLuid();
 	//	std::cout << "### D3D12 Device adapter LUID: " << luid.HighPart << " " << luid.LowPart << std::endl;

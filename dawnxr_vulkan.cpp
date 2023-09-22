@@ -1,5 +1,7 @@
 #include "dawnxr_internal.h"
 
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+
 #include <dawn/native/VulkanBackend.h>
 
 #include <functional>
@@ -188,3 +190,5 @@ XrResult createVulkanSession(XrInstance instance, const XrSessionCreateInfo* cre
 }
 
 } // namespace dawnxr::internal
+
+#endif

@@ -29,7 +29,7 @@ XrResult getGraphicsRequirements(XrInstance instance, XrSystemId systemId, WGPUB
 
 	switch (backendType) {
 #ifdef XR_USE_GRAPHICS_API_D3D12
-	case WGPUBackendType::D3D12:
+	case WGPUBackendType_D3D12:
 		XR_TRY(getD3D12GraphicsRequirements(instance, systemId, requirements));
 		break;
 #endif
@@ -49,8 +49,8 @@ XrResult createAdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
 
 	switch (backendType) {
 #ifdef XR_USE_GRAPHICS_API_D3D12
-	case WGPUBackendType::D3D12:
-		XR_TRY(createD3D12AdapterDiscoveryOptions(instance, systemId, options));
+	case WGPUBackendType_D3D12:
+        XR_TRY(createD3D12OpenXRConfig(instance, systemId, config));
 		break;
 #endif
 #ifdef XR_USE_GRAPHICS_API_VULKAN
@@ -82,7 +82,7 @@ XrResult createSession(XrInstance instance, const XrSessionCreateInfo* createInf
 
 	switch (backendType) {
 #ifdef XR_USE_GRAPHICS_API_D3D12
-	case WGPUBackendType::D3D12:
+	case WGPUBackendType_D3D12:
 		XR_TRY(createD3D12Session(instance, createInfo, &dawnSession));
 		break;
 #endif

@@ -6,20 +6,19 @@
 
 // Currently only supports windows platform and D3D12, Vulkan backends.
 
-#if XROS_OS_WINDOWS
-#define XR_USE_GRAPHICS_API_D3D12 1
-#include <d3d12.h>
-#include <windows.h>
-#undef max
-#undef min
-#define XR_USE_GRAPHICS_API_VULKAN 1
-#define VK_USE_PLATFORM_WIN32_KHR 1
-#include <vulkan/vulkan.h>
-#else
-#define XR_USE_GRAPHICS_API_VULKAN 1
-//#define VK_USE_PLATFORM_WIN32_KHR 1
-#include <vulkan/vulkan.h>
-//#error System not supported
+#if defined(BACKEND_DX12)
+
+    #define XR_USE_GRAPHICS_API_D3D12 1
+    #include <d3d12.h>
+    #include <windows.h>
+    #undef max
+    #undef min
+
+#elif defined(BACKEND_VULKAN)
+
+    #define XR_USE_GRAPHICS_API_VULKAN 1
+    #include <vulkan/vulkan.h>
+
 #endif
 
 #include <openxr/openxr_platform.h>

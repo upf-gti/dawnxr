@@ -39,8 +39,7 @@ protected:
 
 #ifdef XR_USE_GRAPHICS_API_D3D12
 XrResult getD3D12GraphicsRequirements(XrInstance instance, XrSystemId systemId, GraphicsRequirementsDawn* requirements);
-XrResult createD3D12AdapterDiscoveryOptions(XrInstance instance, XrSystemId systemId,
-											dawn::native::AdapterDiscoveryOptionsBase** options);
+XrResult createD3D12OpenXRConfig(XrInstance instance, XrSystemId systemId, void** config);
 XrResult createD3D12Session(XrInstance instance, const XrSessionCreateInfo* createInfo, Session** session);
 #endif
 
