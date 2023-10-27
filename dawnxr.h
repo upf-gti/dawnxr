@@ -6,7 +6,7 @@
 
 // Currently only supports windows platform and D3D12, Vulkan backends.
 
-#if defined(BACKEND_DX12)
+#if defined(_WIN32)
 
     #define XR_USE_GRAPHICS_API_D3D12 1
     #include <d3d12.h>
@@ -14,7 +14,10 @@
     #undef max
     #undef min
 
-#elif defined(BACKEND_VULKAN)
+    #define XR_USE_GRAPHICS_API_VULKAN 1
+    #include <vulkan/vulkan.h>
+
+#elif defined(__linux__ )
 
     #define XR_USE_GRAPHICS_API_VULKAN 1
     #include <vulkan/vulkan.h>
