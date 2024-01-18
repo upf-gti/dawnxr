@@ -8,7 +8,7 @@
 
 #if defined(_WIN32)
 
-    #define XR_USE_GRAPHICS_API_D3D12 1
+    //#define XR_USE_GRAPHICS_API_D3D12 0
     #include <d3d12.h>
     #include <windows.h>
     #undef max
