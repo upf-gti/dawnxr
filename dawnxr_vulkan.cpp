@@ -53,7 +53,6 @@ struct VulkanSession : Session {
 
 		WGPUTextureDescriptor textureDesc = {};
 		textureDesc.nextInChain = nullptr;
-		textureDesc.label = nullptr;
 		textureDesc.usage = usage;
 		textureDesc.dimension = WGPUTextureDimension_2D;
 		textureDesc.size = WGPUExtent3D{ createInfo->width, createInfo->height, 1 };
@@ -65,7 +64,6 @@ struct VulkanSession : Session {
 
 		WGPUTextureViewDescriptor textureViewDesc = {};
 		textureViewDesc.nextInChain = nullptr;
-		textureViewDesc.label = nullptr;
 		textureViewDesc.format = textureDesc.format;
 		textureViewDesc.dimension = WGPUTextureViewDimension_2D;
 		textureViewDesc.baseMipLevel = 0;
