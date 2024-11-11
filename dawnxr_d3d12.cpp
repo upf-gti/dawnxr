@@ -7,9 +7,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace dawnxr::internal;
-
-namespace {
+namespace dawnxr::internal {
 
 const auto dawnSwapchainFormat = WGPUTextureFormat_BGRA8UnormSrgb;
 const auto d3d12SwapchainFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
@@ -51,7 +49,7 @@ struct D3D12Session : Session {
 
         WGPUTextureDescriptor textureDesc = {};
         textureDesc.nextInChain = nullptr;
-        textureDesc.label = nullptr;
+        textureDesc.label = { nullptr, 0u };
         textureDesc.usage = usage;
         textureDesc.dimension = WGPUTextureDimension_2D;
         textureDesc.size = WGPUExtent3D{ createInfo->width, createInfo->height, 1 };
@@ -63,7 +61,7 @@ struct D3D12Session : Session {
 
         WGPUTextureViewDescriptor textureViewDesc = {};
         textureViewDesc.nextInChain = nullptr;
-        textureViewDesc.label = nullptr;
+        textureViewDesc.label = { nullptr, 0u };
         textureViewDesc.format = textureDesc.format;
         textureViewDesc.dimension = WGPUTextureViewDimension_2D;
         textureViewDesc.baseMipLevel = 0;

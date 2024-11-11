@@ -8,14 +8,16 @@
 
 #if defined(_WIN32)
 
-    //#define XR_USE_GRAPHICS_API_D3D12 0
-    //#include <d3d12.h>
-    //#include <windows.h>
-    //#undef max
-    //#undef min
-
+#if defined(BACKEND_DX12)
+    #define XR_USE_GRAPHICS_API_D3D12 1
+    #include <d3d12.h>
+    #include <windows.h>
+    #undef max
+    #undef min
+#else
     #define XR_USE_GRAPHICS_API_VULKAN 1
     #include <vulkan/vulkan.h>
+#endif
 
 #elif defined(__linux__ )
 
